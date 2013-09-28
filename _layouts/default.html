@@ -17,7 +17,7 @@
         $('#main_content').headsmart()
       })
     </script>
-    <title>About Andrea Scarcella by andrea-scarcella</title>
+    <title>{% if page.title %} {{ page.title }} {% endif %}</title>
   </head>
 
   <body>
@@ -45,7 +45,7 @@
 
 
       <section id="main_content">
-       
+	  
 {{ content }}
 
       </section>

@@ -1,8 +1,10 @@
 ---
 layout: default
-title: My projects
+title: Projects
 ---
 #Welcome to my project page!
+
+Here you can find a list of my projects
 
 ## Window state management component
 
