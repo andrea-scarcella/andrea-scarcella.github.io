@@ -62,7 +62,19 @@
 
 <h3 id='design_choices'>Design choices</h3>
 
-<p>State transitions are modelled as user-defined events.</p>
+<p>The architecture used in this project is MVC.</p>
+
+<p>Every window object has a constructor dependency on an instance of the right state machine.</p>
+
+<p>When the window object raises specific events, such as &#8216;browse&#8217;, the appropriate controller method is invoked e.g. controller.onBrowse(win,evt)</p>
+
+<p>This method retrieves the state machine of the window that generated the event, and invokes its corresponding transition e.g. &#8216;browse&#8217;.</p>
+
+<p>The state machine instance raises the corresponding event e.g. &#8216;browseEvent&#8217;, passing the window instance as a parameter.</p>
+
+<p>That event is intercepted by the controller and handled accordingly, i.e. the state of a subset of the window widgets is modified to reflect the state transition.</p>
+
+<p>A distinct advantage of this approach is the loose coupling between the components (design by contract + dependency injection) and the separation of responsibilities (state machine defines high-level behaviour, controller implements it, view generates low-level events) .</p>
 
 <h3 id='diagram_key'>Diagram Key</h3>
 
