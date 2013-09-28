@@ -1,9 +1,9 @@
 ---
-title: Andrea Scarcella's projects.
+layout: default
+title: My projects
 ---
+#Welcome to my project page!
 
-#Projects
-------------
 ## Window state management component
 
 ### Requirements
@@ -25,3 +25,5 @@ Each edge label represents a user action
 
 ### State machine diagram
 ![State machine example] (https://rawgithub.com/andrea-scarcella/assorted-work/master/DesignDocuments/simpleWindowStateMachine.svg)
+
+   
