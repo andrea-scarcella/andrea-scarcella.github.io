@@ -1,3 +1,7 @@
+---
+title: Andrea Scarcella's projects.
+---
+
 #Projects
 ------------
 ## Window state management component
