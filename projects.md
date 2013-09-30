@@ -11,34 +11,48 @@ Here you can find a list of my projects
 ### Requirements
 Design a state management component for a multi-window application.
 
-Each window provides an interface to browse entities and perform operations on them.
+Each window provides an interface to browse business objects and perform operations on them.
 
-The window state determines the operation to be performed, for instance in the 'Add' state the current entity is persisted.
+The window state determines the operation to be performed, for instance in the ‘Add’ state the current entity is persisted.
 
 ### Design choices
 The architecture used in this project is MVC.
 
-Every window object has a constructor dependency on an instance of the right state machine.
+The underlying idea is to abstract the windows behaviour in terms of states from its concrete implementation, this is achieved as follows:
 
-When the window object raises specific events, such as 'browse', the appropriate controller method is invoked e.g. controller.onBrowse(win,evt)
+1. a state machine (see diagram) models the high-level window behaviour and exposes events that are fired on a state transition.
+2. the window class has a dependency on the interface implemented by concrete state machines. It does not manipulate its dependency directly but provides it to a third party (a window controller, see below) that will in turn use it.
+3. a window controller translates window widget events into state machine transitions and handles events raised by a state machine by modifying the state of the widgets of a specific window instance.
 
-This method retrieves the state machine of the window that generated the event, and invokes its corresponding transition e.g. 'browse'.
+A concrete example of how this solution works is the following
 
-The state machine instance raises the corresponding event e.g. 'browseEvent', passing the window instance as a parameter.
+1. a new instance of a window is created, a new instance of a state machine is passed as a dependency
+2. the browse button of a window instance is clicked (e.g. ‘browseButtonClicked’)
+3. the corresponding event is handled by the corresponding window controller method
+4. this method retrieves the state machine instance from the window instance that raised the event and calls the corresponding transition.
+5. depending on its state, the state machine instance raises a specific event
+6. this event is in turn handled by the window controller that implements at a lower level of abstraction by manipulating window widgets directly.
 
-That event is intercepted by the controller and handled accordingly, i.e. the state of a subset of the window widgets is modified to reflect the state transition.
-
-A distinct advantage of this approach is the loose coupling between the components (design by contract + dependency injection) and the separation of responsibilities (state machine defines high-level behaviour, controller implements it, view generates low-level events) .
-
+A distinct advantage of this approach is the loose coupling between the components (design by contract + dependency injection) and the separation of responsibilities (state machine defines high-level behaviour, controller translates low-level widget events into state machine behaviour and implements it by manipulating widgets, view generates low-level events and holds a reference to its state) .
 
 ### Diagram Key
 Each node represents a window state
 
-Each edge label represents a user action
+Each edge label represents a state machine action
 
-'Closed' is an absorbing state
+The semantic of each state is defined as follows:
+
+Add state: new record data can be supplied
+
+Ok state: current (unedited) record data is displayed
+
+Update state: current record data has been modified
+
+warn states: a warning has been issued to the user, it can either be dismissed therefore completing the action or it can be confirmed thus cancelling the requested action.
+
+The state machine diagram can be found in the corrisponding section.
 
 ### State machine diagram
-![State machine example] (https://rawgithub.com/andrea-scarcella/assorted-work/master/DesignDocuments/simpleWindowStateMachine.svg)
+![State machine example] (https://raw.github.com/andrea-scarcella/assorted-work/master/DesignDocuments/windowStateMachine.png)
 
    

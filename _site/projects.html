@@ -59,37 +59,63 @@
 
 <p>Design a state management component for a multi-window application.</p>
 
-<p>Each window provides an interface to browse entities and perform operations on them.</p>
+<p>Each window provides an interface to browse business objects and perform operations on them.</p>
 
-<p>The window state determines the operation to be performed, for instance in the &#8216;Add&#8217; state the current entity is persisted.</p>
+<p>The window state determines the operation to be performed, for instance in the ‘Add’ state the current entity is persisted.</p>
 
 <h3 id='design_choices'>Design choices</h3>
 
 <p>The architecture used in this project is MVC.</p>
 
-<p>Every window object has a constructor dependency on an instance of the right state machine.</p>
+<p>The underlying idea is to abstract the windows behaviour in terms of states from its concrete implementation, this is achieved as follows:</p>
 
-<p>When the window object raises specific events, such as &#8216;browse&#8217;, the appropriate controller method is invoked e.g. controller.onBrowse(win,evt)</p>
+<ol>
+<li>a state machine (see diagram) models the high-level window behaviour and exposes events that are fired on a state transition.</li>
 
-<p>This method retrieves the state machine of the window that generated the event, and invokes its corresponding transition e.g. &#8216;browse&#8217;.</p>
+<li>the window class has a dependency on the interface implemented by concrete state machines. It does not manipulate its dependency directly but provides it to a third party (a window controller, see below) that will in turn use it.</li>
 
-<p>The state machine instance raises the corresponding event e.g. &#8216;browseEvent&#8217;, passing the window instance as a parameter.</p>
+<li>a window controller translates window widget events into state machine transitions and handles events raised by a state machine by modifying the state of the widgets of a specific window instance.</li>
+</ol>
 
-<p>That event is intercepted by the controller and handled accordingly, i.e. the state of a subset of the window widgets is modified to reflect the state transition.</p>
+<p>A concrete example of how this solution works is the following</p>
 
-<p>A distinct advantage of this approach is the loose coupling between the components (design by contract + dependency injection) and the separation of responsibilities (state machine defines high-level behaviour, controller implements it, view generates low-level events) .</p>
+<ol>
+<li>a new instance of a window is created, a new instance of a state machine is passed as a dependency</li>
+
+<li>the browse button of a window instance is clicked (e.g. ‘browseButtonClicked’)</li>
+
+<li>the corresponding event is handled by the corresponding window controller method</li>
+
+<li>this method retrieves the state machine instance from the window instance that raised the event and calls the corresponding transition.</li>
+
+<li>depending on its state, the state machine instance raises a specific event</li>
+
+<li>this event is in turn handled by the window controller that implements at a lower level of abstraction by manipulating window widgets directly.</li>
+</ol>
+
+<p>A distinct advantage of this approach is the loose coupling between the components (design by contract + dependency injection) and the separation of responsibilities (state machine defines high-level behaviour, controller translates low-level widget events into state machine behaviour and implements it by manipulating widgets, view generates low-level events and holds a reference to its state) .</p>
 
 <h3 id='diagram_key'>Diagram Key</h3>
 
 <p>Each node represents a window state</p>
 
-<p>Each edge label represents a user action</p>
+<p>Each edge label represents a state machine action</p>
 
-<p>&#8216;Closed&#8217; is an absorbing state</p>
+<p>The semantic of each state is defined as follows:</p>
+
+<p>Add state: new record data can be supplied</p>
+
+<p>Ok state: current (unedited) record data is displayed</p>
+
+<p>Update state: current record data has been modified</p>
+
+<p>warn states: a warning has been issued to the user, it can either be dismissed therefore completing the action or it can be confirmed thus cancelling the requested action.</p>
+
+<p>The state machine diagram can be found in the corrisponding section.</p>
 
 <h3 id='state_machine_diagram'>State machine diagram</h3>
 
-<p><img alt='State machine example' src='https://rawgithub.com/andrea-scarcella/assorted-work/master/DesignDocuments/simpleWindowStateMachine.svg' /></p>
+<p><img alt='State machine example' src='https://raw.github.com/andrea-scarcella/assorted-work/master/DesignDocuments/windowStateMachine.png' /></p>
 
       </section>
 
